@@ -19,6 +19,8 @@ namespace telescope
         public string ApiKey = "";
         [Tooltip("Api won't send data If not checked ")]
         public bool Enabled = true;
+        [Tooltip("Telescope will send events periodically")]
+        public int FlushInterval = 60;
 
         internal string Token {
             get {
@@ -32,6 +34,7 @@ namespace telescope
             Config.ApiKey = this.Token;
             Config.Url= this.APIHostAddress;
             Config.Enabled = this.Enabled;
+            Config.FlushInterval = this.FlushInterval;
             if (Config.ApiKey == null || Config.ApiKey == "")
             {
                 Config.Enabled = false;

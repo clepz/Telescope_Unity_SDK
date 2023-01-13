@@ -9,6 +9,8 @@ namespace telescope
 
         internal static string Url = null;
         internal static bool Enabled = false;
+        internal static int FlushInterval = 60;
+        internal static int BatchSize = 50;
 
     }
 }

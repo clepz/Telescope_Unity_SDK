@@ -23,16 +23,15 @@ public class test : MonoBehaviour
 
 
         //Debug.Log(JsonConvert.SerializeObject(intDic, Formatting.Indented, new ValueConverter()));
-        Telescope.Send(new TelescopeEvent() { entityName = "deneme", id = "testUSer", type = "insert", value = valueDic });
-        Telescope.Send(new List<TelescopeEvent>()
+        Telescope.Track(new TelescopeEvent() { entityName = "deneme", type = "insert", value = valueDic });
+        Telescope.Track(new List<TelescopeEvent>()
             {
-                new() { entityName = "deneme", id = "testUSer", type = "insert", value = valueDic },
-                new() { entityName = "qqqqqq", id = "testUSer", type = "update", value = valueDic }
+                new() { entityName = "deneme", type = "insert", value = valueDic },
+                new() { entityName = "qqqqqq", type = "update", value = valueDic }
             }
         );
-
-        Telescope.Send("entityName", "testUSer", new() { { "name", "Tarik" }, { "status", 1 } });
-        Telescope.Send("entityName", "testUSer", valueDic);
+        Telescope.Track("entityName", new() { { "name", "Tarik" }, { "status", 1 } });
+        Telescope.Track("entityName", valueDic);
     }
 
     // Update is called once per frame
