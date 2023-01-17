@@ -1,3 +1,4 @@
+using Assets.TelescopeLabs.Scripts;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -11,16 +12,16 @@ namespace telescope
 
         public static void Track(TelescopeEvent te)
         {
-            Controller.Track(te);
+            TelescopeNetwork.Track(te);
         }
         public static void Track(List<TelescopeEvent> tes)
         {
-            Controller.Track(tes);
+            TelescopeNetwork.Track(tes);
         }
 
         public static void Track(string entityName, Dictionary<string, object> value)
         {
-            Controller.Track(new TelescopeEvent(entityName, "insert", value));
+            TelescopeNetwork.Track(new TelescopeEvent(entityName, value));
         }
 
         // You must call the function in awake to use your userId.

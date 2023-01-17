@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System;
-using System.Collections;
-using System.Linq;
+
 using UnityEngine.Device;
 
 namespace telescope
@@ -65,8 +64,9 @@ namespace telescope
                     {"$tl_build_guuid", _buildGuuid },
                     {"$tl_idfv", _idfv },
                     {"$tl_locale", Locale.AnalyticsRegionLanguageCode() },
+                    {"$tl_timestamp_ms", Util.CurrentTimeInMilliseconds() },
 
-                    // -- these can change while game running
+                    // -- these can be changed while game running
                     {"$tl_screen_width", Screen.width },
                     {"$tl_screen_height", Screen.height },
                     {"$tl_screen_dpi", Screen.dpi },
@@ -74,7 +74,6 @@ namespace telescope
                     {"$tl_device_radio", Util.GetRadio()},
                     {"$tl_device_volume", DeviceVolumeProvider.GetDeviceVolume() },
                 };
-
             _eventCounter++;
             return eventMetadata;
         }

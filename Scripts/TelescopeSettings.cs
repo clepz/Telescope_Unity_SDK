@@ -13,8 +13,8 @@ namespace telescope
         //TODO: Convert to log level
         [Tooltip("If true will print helpful debugging messages")] 
         public bool ShowDebug;
-        [Tooltip("The api host of where to send the requests to. Useful when you need to proxy all the request to somewhere else.'")]
-        public string APIHostAddress = "https://telescopelabs.azurewebsites.net/api/eventrouter";
+        //[Tooltip("The api host of where to send the requests to. Useful when you need to proxy all the request to somewhere else.'")]
+        //public string APIHostAddress = "https://api.telescopelabs.io";
         [Tooltip("The token of the Telescope project. Telescope Api won't be enabled if you don't enter your api key.")]
         public string ApiKey = "";
         [Tooltip("Api won't send data If not checked ")]
@@ -32,7 +32,7 @@ namespace telescope
         {
             Config.ShowDebug = ShowDebug;
             Config.ApiKey = this.Token;
-            Config.Url= this.APIHostAddress;
+            //Config.Url= this.APIHostAddress;
             Config.Enabled = this.Enabled;
             Config.FlushInterval = this.FlushInterval;
             if (Config.ApiKey == null || Config.ApiKey == "")

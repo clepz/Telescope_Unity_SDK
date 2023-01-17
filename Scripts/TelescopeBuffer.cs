@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
@@ -39,17 +41,30 @@ namespace telescope
 
         #region Track
 
-        private const string EventAutoIncrementingIdName = "EventAutoIncrementingID";
+        private const string EventAutoIncrementingIdName = "TL_EventAutoIncrementingID";
 
         // For performance, we can store the lowest unsent event ID to prevent searching from 0.
-        private const string EventStartIndexName = "EventStartIndex";
+        private const string EventStartIndexName = "TL_EventStartIndex";
 
         internal static void EnqueueTrackingData(TelescopeEvent data)
         {
+            //data.value = Telescope.MergeValues(data.value, Metadata.GetEventMetadata());
+            EnqueueTrackingDataCore(data);
+        }
+
+        internal static void EnqueueTrackingData(List<TelescopeEvent> data)
+        {
+            //foreach (TelescopeEvent te in data)
+            //    te.value = Telescope.MergeValues(te.value, Metadata.GetEventMetadata());
+            EnqueueTrackingDataCore(data);
+        }
+
+        private static void EnqueueTrackingDataCore<T>(T data)
+        {
             int eventId = EventAutoIncrementingID();
-            String trackingKey = "Event" + eventId.ToString();
-            data["event_id"] = trackingKey;
-            PlayerPrefs.SetString(trackingKey, JsonUtility.ToJson(data));
+            string trackingKey = "TL_Event" + eventId.ToString();
+            //data["$tl_pref_event_id"] = trackingKey;
+            PlayerPrefs.SetString(trackingKey, JsonConvert.SerializeObject(data));
             IncreaseTrackingDataID();
         }
 
@@ -81,12 +96,23 @@ namespace telescope
             int maxIndex = EventAutoIncrementingID() - 1;
             while (batch.Count < batchSize && dataIndex <= maxIndex)
             {
-                String trackingKey = dataIndex.ToString();
+                string trackingKey = "TL_Event" + dataIndex.ToString();
                 if (PlayerPrefs.HasKey(trackingKey))
                 {
                     try
                     {
-                        batch.Add(JsonUtility.FromJson<TelescopeEvent>(PlayerPrefs.GetString(trackingKey)));
+                        var strData = PlayerPrefs.GetString(trackingKey);
+                        var aaa = JsonConvert.DeserializeObject(strData);
+                        if (strData[0] == '[')
+                        {
+                            var data = JsonConvert.DeserializeObject<List<TelescopeEvent>>(strData);
+                            batch = Enumerable.Union(batch, data).ToList();
+                        }
+                        else
+                        {
+                            var data = JsonConvert.DeserializeObject<TelescopeEvent>(strData);
+                            batch.Add(data);
+                        }
                     }
                     catch (Exception e)
                     {
@@ -126,7 +152,7 @@ namespace telescope
             int maxIndex = EventAutoIncrementingID() - 1;
             while (deletedCount < batchSize && dataIndex <= maxIndex)
             {
-                String trackingKey = "Event" + dataIndex.ToString();
+                String trackingKey = "TL_Event" + dataIndex.ToString();
                 if (PlayerPrefs.HasKey(trackingKey))
                 {
                     PlayerPrefs.DeleteKey(trackingKey);
@@ -142,7 +168,7 @@ namespace telescope
                 // there can be a large number of string concatenation and PlayerPrefs API calls (in extreme cases, 100K+).
                 // At this point, we should have iterated through all possible event IDs and can assume that there are no other events
                 // stored in preferences (since we deleted them all).
-                string idKey =EventAutoIncrementingIdName;
+                string idKey = EventAutoIncrementingIdName;
                 PlayerPrefs.SetInt(idKey, 0);
                 PlayerPrefs.SetInt(startIndexKey, 0);
             }
@@ -157,7 +183,7 @@ namespace telescope
         {
             foreach (TelescopeEvent data in batch)
             {
-                String id = (string)data["event_id"];
+                String id = (string)data["$tl_pref_event_id"];
                 if (id != null && PlayerPrefs.HasKey(id))
                 {
                     PlayerPrefs.DeleteKey(id);

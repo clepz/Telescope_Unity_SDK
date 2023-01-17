@@ -1,24 +1,27 @@
 ﻿
-using System;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 
 namespace telescope
 {
+    [JsonObject(MemberSerialization.OptOut)]
     public class TelescopeEvent
     {
         public string entityName;
-        public string type;
-        public string id { get => TelescopeBuffer.DistinctId; set => id = value; }
+        public string type = "insert";
+        public string id {
+            get => TelescopeBuffer.DistinctId;
+            internal set { id = value; }
+        }
         public Dictionary<string, object> value;
 
         public TelescopeEvent()
         {
         }
 
-        public TelescopeEvent(string entityName, string type, Dictionary<string, object> value)
+        public TelescopeEvent(string entityName, Dictionary<string, object> value)
         {
             this.entityName = entityName;
-            this.type = type;
             this.value = value;
         }
 
@@ -35,7 +38,6 @@ namespace telescope
             return new TelescopeEvent()
             {
                 entityName = "session_start",
-                type = "insert",
                 value = Metadata.GetEventMetadata()
             };
         }
@@ -45,7 +47,6 @@ namespace telescope
             return new TelescopeEvent()
             {
                 entityName = "game_running",
-                type = "insert",
                 value = Metadata.GetEventMetadata()
             };
         }
@@ -55,7 +56,6 @@ namespace telescope
             return new TelescopeEvent()
             {
                 entityName = "client_device",
-                type = "insert",
                 value = Telescope.MergeValues(Metadata.GetEventMetadata(), Metadata.GetClientDeviceMetaData())
             };
         }
@@ -65,7 +65,6 @@ namespace telescope
             return new TelescopeEvent()
             {
                 entityName = "session_end",
-                type = "insert",
                 value = Telescope.MergeValues(Metadata.GetEventMetadata(), Metadata.GetEndSessionMetadata())
             };
         }
